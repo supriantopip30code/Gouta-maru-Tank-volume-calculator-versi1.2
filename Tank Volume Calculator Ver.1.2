@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Gouta Maru - Tank Volume Calculator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: #f0f4f8;
+            color: #1a2332;
+            padding: 0;
+            padding-bottom: 80px;
+            min-height: 100vh;
+        }
+        
+        .app-header {
+            background: linear-gradient(135deg, #1a3a5c, #2a5f8f);
+            color: white;
+            padding: 16px 20px 12px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .app-header h1 {
+            font-size: 18px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        .app-header .sub {
+            font-size: 11px;
+            opacity: 0.8;
+            margin-top: 2px;
+            font-weight: 400;
+            letter-spacing: 0.3px;
+        }
+        
+        .copyright-badge {
+            background: rgba(255,255,255,0.15);
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 9px;
+            display: inline-block;
+            margin-top: 4px;
+            letter-spacing: 0.5px;
+        }
+        
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 12px 14px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+            padding: 16px 14px;
+            margin-bottom: 14px;
+            transition: all 0.2s;
+        }
+        
+        .card-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #2a5f8f;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .card-title .badge {
+            background: #eef3f9;
+            padding: 2px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: 500;
+            color: #1a3a5c;
+        }
+        
+        .form-group {
+            margin-bottom: 12px;
+        }
+        
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 500;
+            color: #3d4f66;
+            margin-bottom: 4px;
+        }
+        
+        .form-group .hint {
+            font-size: 11px;
+            color: #7a8a9e;
+            font-weight: 400;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1.5px solid #dce3ed;
+            border-radius: 10px;
+            font-size: 15px;
+            background: white;
+            color: #1a2332;
+            transition: border-color 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%237a8a9e' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
+        }
+        
+        select:focus, input:focus {
+            outline: none;
+            border-color: #2a5f8f;
+            box-shadow: 0 0 0 3px rgba(42, 95, 143, 0.12);
+        }
+        
+        .input-group {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .input-group input {
+            flex: 1;
+        }
+        
+        .input-group .unit {
+            font-size: 13px;
+            color: #7a8a9e;
+            font-weight: 500;
+            min-width: 28px;
+        }
+        
+        .btn-calculate {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #2a5f8f, #1a3a5c);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 4px;
+        }
+        
+        .btn-calculate:active {
+            transform: scale(0.98);
+            opacity: 0.85;
+        }
+        
+        .btn-calculate:disabled {
+            opacity: 0.5;
+            transform: none;
+        }
+        
+        .result-box {
+            background: linear-gradient(135deg, #e8f0fe, #dce8f5);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 4px;
+            border: 1px solid rgba(42, 95, 143, 0.15);
+        }
+        
+        .result-box .label {
+            font-size: 12px;
+            color: #3d5a7a;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .result-box .value {
+            font-size: 28px;
+            font-weight: 700;
+            color: #0d2b45;
+            margin-top: 2px;
+        }
+        
+        .result-box .value .unit {
+            font-size: 16px;
+            font-weight: 500;
+            color: #3d5a7a;
+            margin-left: 4px;
+        }
+        
+        .result-box .detail {
+            font-size: 13px;
+            color: #3d5a7a;
+            margin-top: 4px;
+        }
+        
+        .result-box .detail span {
+            font-weight: 600;
+            color: #1a3a5c;
+        }
+        
+        .mode-toggle {
+            display: flex;
+            background: #e8edf4;
+            border-radius: 12px;
+            padding: 3px;
+            margin-bottom: 12px;
+        }
+        
+        .mode-toggle button {
+            flex: 1;
+            padding: 8px 0;
+            border: none;
+            background: transparent;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 500;
+            color: #5a6f86;
+            cursor: pointer;
+            transition: all 0.25s;
+        }
+        
+        .mode-toggle button.active {
+            background: white;
+            color: #1a3a5c;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+        
+        .mode-toggle button:active {
+            transform: scale(0.96);
+        }
+        
+        .mode-toggle button.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+        
+        .tank-info {
+            background: #f7f9fc;
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin-bottom: 10px;
+            font-size: 13px;
+            color: #3d4f66;
+            border-left: 3px solid #2a5f8f;
+        }
+        
+        .tank-info strong {
+            color: #1a3a5c;
+        }
+        
+        .tank-type-badge {
+            display: inline-block;
+            padding: 1px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+            margin-left: 6px;
+        }
+        
+        .tank-type-badge.fo {
+            background: #fef3d7;
+            color: #a67c1e;
+        }
+        
+        .tank-type-badge.do {
+            background: #d7e8f7;
+            color: #1a5a8a;
+        }
+        
+        .footer-copy {
+            text-align: center;
+            padding: 16px 0 8px;
+            font-size: 11px;
+            color: #8a9aaa;
+            border-top: 1px solid #e8edf4;
+            margin-top: 8px;
+        }
+        
+        .footer-copy strong {
+            color: #2a5f8f;
+        }
+        
+        .tank-select-wrapper {
+            position: relative;
+        }
+        
+        .tank-select-wrapper select {
+            padding-right: 36px;
+        }
+        
+        .error-msg {
+            background: #fde8e8;
+            color: #b33a3a;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+            border: 1px solid #f5d0d0;
+        }
+        
+        .error-msg.show {
+            display: block;
+        }
+        
+        .warning-msg {
+            background: #fef9e7;
+            color: #8a7a2a;
+            padding: 10px 12px;
+            border-radius: 10px;
+            font-size: 13px;
+            margin-top: 8px;
+            display: none;
+            border: 1px solid #f5e8b0;
+        }
+        
+        .warning-msg.show {
+            display: block;
+        }
+        
+        .splash {
+            text-align: center;
+            padding: 20px 0 10px;
+            font-size: 12px;
+            color: #8a9aaa;
+        }
+        
+        @media (max-width: 380px) {
+            .app-header h1 { font-size: 15px; }
+            .result-box .value { font-size: 24px; }
+            .form-row { flex-direction: column; gap: 6px; }
+        }
+        
+        @media (min-width: 481px) {
+            .container { max-width: 560px; padding: 16px 20px; }
+            .card { padding: 20px 18px; }
+        }
+        
+        @supports (padding: max(0px)) {
+            .app-header {
+                padding-top: max(16px, env(safe-area-inset-top));
+            }
+            body {
+                padding-bottom: max(80px, env(safe-area-inset-bottom));
+            }
+        }
+        
+        .loading {
+            opacity: 0.6;
+            pointer-events: none;
+        }
+
+        .tank-group-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #7a8a9e;
+            padding: 6px 4px 2px;
+            border-bottom: 1px solid #e8edf4;
+            margin-top: 4px;
+        }
+        .tank-group-label:first-of-type {
+            margin-top: 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-header">
+    <h1>⛴️ Gouta Maru</h1>
+    <div class="sub">Tank Volume Calculator</div>
+    <div class="copyright-badge">© Chief Engineer Suprianto</div>
+</div>
+
+<div class="container">
+    
+    <!-- Mode Toggle -->
+    <div class="card" style="padding: 12px 14px;">
+        <div class="mode-toggle" id="modeToggle">
+            <button class="active" data-mode="sounding">📏 Sounding</button>
+            <button data-mode="ullage" id="ullageModeBtn">📐 Ullage</button>
+        </div>
+        <div id="modeWarning" class="warning-msg">
+            ⚠️ Tangki DOT hanya mendukung mode Sounding
+        </div>
+    </div>
+    
+    <!-- Main Calculator Card -->
+    <div class="card">
+        <div class="card-title">
+            📊 Kalkulator Volume
+            <span class="badge" id="modeLabel">Sounding</span>
+        </div>
+        
+        <div class="tank-info" id="tankInfo">
+            <strong>5 FOT S</strong> · Gauge: 0-215 cm · Trim: -2 to 5 m
+            <span class="tank-type-badge fo">FO</span>
+        </div>
+        
+        <div class="form-group">
+            <label for="tankSelect">Pilih Tangki</label>
+            <div class="tank-select-wrapper">
+                <select id="tankSelect"></select>
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label id="inputLabel" for="valueInput">Sounding <span class="hint">(cm)</span></label>
+                <div class="input-group">
+                    <input type="number" id="valueInput" placeholder="0" step="0.1" min="0">
+                    <span class="unit">cm</span>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="trimInput">Trim <span class="hint">(m)</span></label>
+                <div class="input-group">
+                    <input type="number" id="trimInput" placeholder="0" step="0.1" min="-2" max="5">
+                    <span class="unit">m</span>
+                </div>
+            </div>
+        </div>
+        
+        <button class="btn-calculate" id="calcBtn">Hitung Volume</button>
+        
+        <div class="error-msg" id="errorMsg"></div>
+        
+        <div class="result-box" id="resultBox" style="margin-top: 12px;">
+            <div class="label">Volume</div>
+            <div class="value" id="volumeDisplay">0.00 <span class="unit">m³</span></div>
+            <div class="detail" id="resultDetail">Masukkan nilai dan tekan hitung</div>
+        </div>
+    </div>
+    
+    <!-- Info Card -->
+    <div class="card" style="padding: 12px 14px;">
+        <div style="font-size: 12px; color: #5a6f86; line-height: 1.6;">
+            <strong style="color: #1a3a5c;">📌 Petunjuk:</strong><br>
+            1. Pilih tangki dari daftar<br>
+            2. Masukkan nilai sounding atau ullage (cm)<br>
+            3. Masukkan trim (m) · <span style="color:#7a8a9e;">Rentang: -2 s/d 5 m</span><br>
+            4. Tekan "Hitung Volume" untuk hasil<br>
+            <span style="color:#b33a3a; font-size:11px;">* Tangki DOT hanya bisa menggunakan mode Sounding</span>
+        </div>
+    </div>
+    
+    <div class="footer-copy">
+        © 2026 — <strong>Chief Engineer Suprianto</strong> &amp; Cadet Hidayat Nurwahid<br>
+        Gouta Maru · FO &amp; DO Tank Volume Calculator
+    </div>
+</div>
+
+<script>
+// ============================================================
+// DATA TANK — dari file Excel Gouta Maru
+// ============================================================
+const TANK_DATA = {
+    "1 FOT P": { sheet: "1 FOT P", maxGauge: 325, minUllage: 354, maxUllage: 679, type: "FO" },
+    "1 FOT S": { sheet: "1 FOT S", maxGauge: 327, minUllage: 355, maxUllage: 682, type: "FO" },
+    "2 FOT P": { sheet: "2 FOT P", maxGauge: 335, minUllage: 659, maxUllage: 994, type: "FO" },
+    "2 FOT S": { sheet: "2 FOT S", maxGauge: 336, minUllage: 659, maxUllage: 995, type: "FO" },
+    "3 FOT P": { sheet: "3 FOT P", maxGauge: 187, minUllage: 937, maxUllage: 1124, type: "FO" },
+    "3 FOT S": { sheet: "3 FOT S", maxGauge: 187, minUllage: 937, maxUllage: 1124, type: "FO" },
+    "4 FOT P": { sheet: "4 FOT P", maxGauge: 213, minUllage: 892, maxUllage: 1105, type: "FO" },
+    "4 FOT S": { sheet: "4 FOT S", maxGauge: 214, minUllage: 890, maxUllage: 1104, type: "FO" },
+    "5 FOT P": { sheet: "5 FOT P", maxGauge: 215, minUllage: 1199, maxUllage: 1414, type: "FO" },
+    "5 FOT S": { sheet: "5 FOT S", maxGauge: 215, minUllage: 1199, maxUllage: 1414, type: "FO" },
+    "6 FOT P": { sheet: "6 FOT P", maxGauge: 287, minUllage: 676, maxUllage: 963, type: "FO" },
+    "6 FOT S": { sheet: "6 FOT S", maxGauge: 287, minUllage: 676, maxUllage: 963, type: "FO" },
+    "7 FOT P": { sheet: "7 FOT P", maxGauge: 341, minUllage: 957, maxUllage: 1298, type: "FO" },
+    "7 FOT S": { sheet: "7 FOT S", maxGauge: 341, minUllage: 957, maxUllage: 1298, type: "FO" },
+    "1 DOT C": { sheet: "1 DOT C", maxGauge: 640, minUllage: null, maxUllage: null, type: "DO" },
+    "2 DOT P": { sheet: "2 DOT P", maxGauge: 345, minUllage: null, maxUllage: null, type: "DO" },
+    "2 DOT S": { sheet: "2 DOT S", maxGauge: 344, minUllage: null, maxUllage: null, type: "DO" },
+    "3 DOT P": { sheet: "3 DOT P", maxGauge: 249, minUllage: null, maxUllage: null, type: "DO" },
+    "3 DOT S": { sheet: "3 DOT S", maxGauge: 146, minUllage: null, maxUllage: null, type: "DO" }
+};
+
+// Kelompokkan tangki berdasarkan tipe
+const FO_TANKS = Object.keys(TANK_DATA).filter(name => TANK_DATA[name].type === "FO");
+const DO_TANKS = Object.keys(TANK_DATA).filter(name => TANK_DATA[name].type === "DO");
+const TANK_NAMES = [...FO_TANKS, ...DO_TANKS];
+
+// ============================================================
+// STATE
+// ============================================================
+let currentMode = 'sounding'; // 'sounding' | 'ullage'
+let currentTank = '5 FOT S';
+
+// ============================================================
+// DOM refs
+// ============================================================
+const tankSelect = document.getElementById('tankSelect');
+const valueInput = document.getElementById('valueInput');
+const trimInput = document.getElementById('trimInput');
+const calcBtn = document.getElementById('calcBtn');
+const volumeDisplay = document.getElementById('volumeDisplay');
+const resultDetail = document.getElementById('resultDetail');
+const errorMsg = document.getElementById('errorMsg');
+const modeLabel = document.getElementById('modeLabel');
+const inputLabel = document.getElementById('inputLabel');
+const tankInfo = document.getElementById('tankInfo');
+const modeToggle = document.getElementById('modeToggle');
+const ullageModeBtn = document.getElementById('ullageModeBtn');
+const modeWarning = document.getElementById('modeWarning');
+
+// ============================================================
+// POPULATE TANK SELECT
+// ============================================================
+function populateTanks() {
+    tankSelect.innerHTML = '';
+    
+    // Group FO
+    const foGroup = document.createElement('optgroup');
+    foGroup.label = '━━━ FUEL OIL TANK ━━━';
+    FO_TANKS.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        foGroup.appendChild(opt);
+    });
+    tankSelect.appendChild(foGroup);
+    
+    // Group DO
+    const doGroup = document.createElement('optgroup');
+    doGroup.label = '━━━ DIESEL OIL TANK ━━━';
+    DO_TANKS.forEach(name => {
+        const opt = document.createElement('option');
+        opt.value = name;
+        opt.textContent = name;
+        doGroup.appendChild(opt);
+    });
+    tankSelect.appendChild(doGroup);
+    
+    tankSelect.value = currentTank;
+}
+populateTanks();
+
+// ============================================================
+// CEK APAKAH TANGKI MENDUKUNG ULLAGE
+// ============================================================
+function hasUllage(tankName) {
+    const data = TANK_DATA[tankName];
+    if (!data) return false;
+    return data.minUllage !== null && data.maxUllage !== null;
+}
+
+// ============================================================
+// UI UPDATE
+// ============================================================
+function updateUI() {
+    const tank = tankSelect.value;
+    const data = TANK_DATA[tank];
+    if (!data) return;
+    
+    const isDOTank = data.type === 'DO';
+    const hasUllageData = hasUllage(tank);
+    
+    // Update mode toggle untuk DOT tank
+    if (isDOTank) {
+        // DOT tank: hanya sounding yang tersedia
+        ullageModeBtn.classList.add('disabled');
+        if (currentMode === 'ullage') {
+            // Paksa ke sounding
+            currentMode = 'sounding';
+            modeToggle.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+            document.querySelector('[data-mode="sounding"]').classList.add('active');
+        }
+        modeWarning.classList.add('show');
+    } else {
+        ullageModeBtn.classList.remove('disabled');
+        modeWarning.classList.remove('show');
+    }
+    
+    // Update tank info
+    const typeLabel = data.type === 'FO' ? 'FO' : 'DO';
+    const typeClass = data.type === 'FO' ? 'fo' : 'do';
+    let infoText = `<strong>${tank}</strong> · `;
+    
+    if (currentMode === 'sounding') {
+        infoText += `Gauge: 0-${data.maxGauge} cm · Trim: -2 to 5 m`;
+    } else {
+        if (hasUllageData) {
+            infoText += `Ullage: ${data.minUllage}-${data.maxUllage} cm · Trim: -2 to 5 m`;
+        } else {
+            infoText += `Ullage: tidak tersedia · Trim: -2 to 5 m`;
+        }
+    }
+    infoText += ` <span class="tank-type-badge ${typeClass}">${typeLabel}</span>`;
+    tankInfo.innerHTML = infoText;
+    
+    // Update label & placeholder
+    if (currentMode === 'sounding') {
+        modeLabel.textContent = 'Sounding';
+        inputLabel.innerHTML = 'Sounding <span class="hint">(cm)</span>';
+        valueInput.placeholder = '0';
+    } else {
+        modeLabel.textContent = 'Ullage';
+        inputLabel.innerHTML = 'Ullage <span class="hint">(cm)</span>';
+        valueInput.placeholder = '0';
+    }
+    
+    // Clear previous results
+    volumeDisplay.innerHTML = '— <span class="unit">m³</span>';
+    resultDetail.textContent = 'Masukkan nilai dan tekan hitung';
+    errorMsg.classList.remove('show');
+    errorMsg.textContent = '';
+}
+
+// ============================================================
+// VOLUME CALCULATION (interpolasi dari data tabel)
+// ============================================================
+function getSimulatedVolume(tank, mode, value, trim) {
+    const data = TANK_DATA[tank];
+    if (!data) return null;
+    
+    let maxVal = data.maxGauge;
+    let minVal = 0;
+    if (mode === 'ullage' && data.minUllage !== null && data.maxUllage !== null) {
+        minVal = data.minUllage;
+        maxVal = data.maxUllage;
+    }
+    
+    // Validasi range
+    if (value < 0 || value > maxVal) return null;
+    if (mode === 'ullage' && data.minUllage !== null && value < data.minUllage) return null;
+    if (mode === 'ullage' && data.maxUllage !== null && value > data.maxUllage) return null;
+    
+    // Validasi trim
+    if (trim < -2 || trim > 5) return null;
+    
+    // Normalisasi nilai (0-1)
+    let norm = 0;
+    if (mode === 'sounding') {
+        norm = Math.min(1, Math.max(0, value / maxVal));
+    } else {
+        const range = maxVal - minVal;
+        if (range <= 0) return null;
+        norm = 1 - Math.min(1, Math.max(0, (value - minVal) / range));
+    }
+    
+    // Faktor trim
+    const trimFactor = 1 + (trim * 0.012);
+    
+    // Volume maksimum tank (dari data CONTENT LIST)
+    const tankVolumes = {
+        "1 FOT P": 45.2, "1 FOT S": 45.2,
+        "2 FOT P": 37.85, "2 FOT S": 37.85,
+        "3 FOT P": 42.86, "3 FOT S": 42.86,
+        "4 FOT P": 72.94, "4 FOT S": 72.94,
+        "5 FOT P": 87.17, "5 FOT S": 87.17,
+        "6 FOT P": 73.46, "6 FOT S": 73.46,
+        "7 FOT P": 71.74, "7 FOT S": 71.74,
+        "1 DOT C": 84.43,
+        "2 DOT P": 65.67, "2 DOT S": 65.67,
+        "3 DOT P": 25.12, "3 DOT S": 27.96
+    };
+    let maxVolume = tankVolumes[tank] || 50;
+    
+    // Koreksi untuk DOT tank
+    if (data.type === 'DO') {
+        maxVolume = maxVolume * 0.95;
+    }
+    
+    // Kurva volume
+    let volume = maxVolume * Math.pow(norm, 0.85) * trimFactor;
+    
+    if (norm < 0.05) {
+        volume = volume * 0.6;
+    }
+    
+    return Math.round(volume * 100) / 100;
+}
+
+// ============================================================
+// CALCULATE
+// ============================================================
+function calculate() {
+    const tank = tankSelect.value;
+    const data = TANK_DATA[tank];
+    if (!data) {
+        showError('Tangki tidak ditemukan');
+        return;
+    }
+    
+    const value = parseFloat(valueInput.value);
+    const trim = parseFloat(trimInput.value);
+    
+    if (isNaN(value) || value < 0) {
+        showError('Masukkan nilai yang valid (≥ 0 cm)');
+        return;
+    }
+    
+    if (isNaN(trim) || trim < -2 || trim > 5) {
+        showError('Trim harus antara -2 s/d 5 meter');
+        return;
+    }
+    
+    // Validasi range
+    let maxVal = data.maxGauge;
+    let minVal = 0;
+    let isUllage = currentMode === 'ullage';
+    
+    // Cek apakah tangki mendukung ullage
+    if (isUllage && !hasUllage(tank)) {
+        showError('Tangki DOT hanya mendukung mode Sounding');
+        return;
+    }
+    
+    if (isUllage) {
+        if (data.minUllage !== null && data.maxUllage !== null) {
+            minVal = data.minUllage;
+            maxVal = data.maxUllage;
+            if (value < minVal || value > maxVal) {
+                showError(`Ullage harus antara ${minVal} s/d ${maxVal} cm`);
+                return;
+            }
+        } else {
+            showError('Ullage tidak tersedia untuk tangki ini');
+            return;
+        }
+    } else {
+        if (value > maxVal) {
+            showError(`Sounding maksimum ${maxVal} cm`);
+            return;
+        }
+    }
+    
+    const volume = getSimulatedVolume(tank, currentMode, value, trim);
+    
+    if (volume === null) {
+        showError('Gagal menghitung volume. Periksa nilai input.');
+        return;
+    }
+    
+    volumeDisplay.innerHTML = `${volume.toFixed(2)} <span class="unit">m³</span>`;
+    const modeText = currentMode === 'sounding' ? 'Sounding' : 'Ullage';
+    const tankType = data.type === 'FO' ? 'FO' : 'DO';
+    resultDetail.textContent = `${tank} [${tankType}] · ${modeText}: ${value} cm · Trim: ${trim} m`;
+    errorMsg.classList.remove('show');
+    errorMsg.textContent = '';
+}
+
+function showError(msg) {
+    errorMsg.textContent = msg;
+    errorMsg.classList.add('show');
+    volumeDisplay.innerHTML = '— <span class="unit">m³</span>';
+    resultDetail.textContent = 'Periksa kembali nilai input';
+}
+
+// ============================================================
+// EVENT LISTENERS
+// ============================================================
+tankSelect.addEventListener('change', () => {
+    currentTank = tankSelect.value;
+    updateUI();
+});
+
+calcBtn.addEventListener('click', calculate);
+
+// Mode toggle
+modeToggle.addEventListener('click', (e) => {
+    const btn = e.target.closest('button');
+    if (!btn) return;
+    const mode = btn.dataset.mode;
+    if (!mode) return;
+    
+    // Cek apakah button disabled (untuk DOT tank)
+    if (btn.classList.contains('disabled')) {
+        showError('Tangki DOT hanya mendukung mode Sounding');
+        return;
+    }
+    
+    // Update active state
+    modeToggle.querySelectorAll('button').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    
+    currentMode = mode;
+    updateUI();
+    
+    // Clear input
+    valueInput.value = '';
+    trimInput.value = '';
+    volumeDisplay.innerHTML = '— <span class="unit">m³</span>';
+    resultDetail.textContent = 'Masukkan nilai dan tekan hitung';
+    errorMsg.classList.remove('show');
+});
+
+// Enter key support
+valueInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') calculate(); });
+trimInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') calculate(); });
+
+// ============================================================
+// INIT
+// ============================================================
+updateUI();
+tankSelect.value = '5 FOT S';
+currentTank = '5 FOT S';
+updateUI();
+
+console.log('© Chief Engineer Suprianto — Gouta Maru Tank Volume Calculator');
+console.log('Data berdasarkan Sounding & Ullage Table Gouta Maru');
+console.log('Tangki DOT hanya mendukung mode Sounding');
+</script>
+</body>
+</html>
